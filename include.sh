@@ -10,6 +10,81 @@ include() {
  true
 }
 #-------------------------------------------------
+doc-html-header-template() {
+ cat << EOF
+<!-- Header -->
+<header class="w3-container w3-center w3-padding-32"> 
+<h1><b>$( if-bloginfo-name || a $( get-bloginfo-url ) $( get-bloginfo-name ) )</b></h1>
+<p>$( if-bloginfo-description || get-bloginfo-description )</p>
+</header>
+EOF
+}
+#-------------------------------------------------
+doc-html-grid-template() {
+ cat << EOF
+<!-- begin Grid -->
+<div class="w3-row">
+
+<div class="w3-col l8 s12">
+<div class="w3-card-4 w3-margin w3-white">
+<div class="w3-container">
+$( h1 $( basename ${file} ) )
+$( the-content )
+<!--.w3-container--></div>
+<!--.w3-card--></div>
+<!--.w3-col--></div>
+
+<div class="w3-col l4">
+<div class="w3-card-2 w3-margin w3-margin-top w3-white">
+<div class="w3-container">
+${navigation} 
+<!--.w3-container--></div>
+<!--.w3-card--></div>
+<!--.w3-col--></div>
+
+<!--.w3-row--></div>
+<!-- Grid end -->
+EOF
+}
+#-------------------------------------------------
+doc-html-footer-template() {
+ cat << EOF
+<footer class="w3-container w3-dark-grey w3-padding-32 w3-margin-top">
+&copy; 2017 $( if-bloginfo-url || a $( get-bloginfo-url ) $( basename $( get-bloginfo-url ) ) )
+<!--button class="w3-button w3-black w3-disabled w3-padding-large w3-margin-bottom">Previous</button>
+<button class="w3-button w3-black w3-padding-large w3-margin-bottom">Next</button-->
+</footer>
+EOF
+}
+#-------------------------------------------------
+doc-html-header() {
+ if-bloginfo-name || if-bloginfo-description || doc-html-header-template
+}
+#-------------------------------------------------
+doc-html-grid() {
+ doc-html-grid-template
+}
+#-------------------------------------------------
+doc-html-footer() {
+ doc-html-footer-template
+}
+#-------------------------------------------------
+if-bloginfo-url() {
+ test ! "$( get-bloginfo-url )" != "bloginfo-url"
+}
+#-------------------------------------------------
+if-bloginfo-name() {
+ test ! "$( get-bloginfo-name )" != "bloginfo-name"
+}
+#-------------------------------------------------
+if-bloginfo-description() {
+ test ! "$( get-bloginfo-description )" != "bloginfo-description"
+}
+#-------------------------------------------------
+get-bloginfo-description() {
+ get-bloginfo description
+}
+#-------------------------------------------------
 get-bloginfo-name() {
  get-bloginfo name
 }
