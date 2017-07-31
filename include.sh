@@ -1,6 +1,6 @@
 #!/bin/bash
 ## include
-## version 0.0.1 - initial
+## version 0.0.2 - ul li
 ##################################################
 markdown() { ${SH}/markdown.sh ${@} ; }
 file_mime_encoding() { ${SH2}/file-mime-encoding.sh ${@} ; }
@@ -37,6 +37,7 @@ $( the-content )
 <div class="w3-col l4">
 <div class="w3-card-2 w3-margin w3-margin-top w3-white">
 <div class="w3-container">
+<ul><li><a href="index.html">top</li></ul>
 ${navigation} 
 <!--.w3-container--></div>
 <!--.w3-card--></div>
@@ -134,6 +135,14 @@ a() { { local href ; href="${1}" ; local text ; text=${@:2} ; }
  cat << EOF
 <a href="${href}">${text}</a>
 EOF
+}
+#-------------------------------------------------
+li() { { local text ; text="${@}" ; }
+ tag-fold li ${text}
+}
+#-------------------------------------------------
+ul() { { local text ; text="${@}" ; }
+ tag-fold ul ${text}
 }
 #-------------------------------------------------
 p() { { local text ; text="${@}" ; }
