@@ -21,6 +21,8 @@ v0.0.1 - initial
 
 - add canonical link element eliminated potention omission in search results
   + in particular, index.html should be linked to bloginfo-url if available
+- ignore first line in doc-html
+ + make the first line in doc special and reserved for purpose to be specified at later date
 
 ---
 
