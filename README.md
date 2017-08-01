@@ -11,9 +11,9 @@ v0.0.4 - error-404-html header/footer fix, title template
 
 **Changelog**
 
-v0.0.3 - doc-html title fix 
-v0.0.2 - if-bloginfo templates  
-v0.0.1 - initial
+v0.0.3 - doc-html title fix  
+v0.0.2 - if-bloginfo templates   
+v0.0.1 - initial 
 
 ---
 
