@@ -1,6 +1,6 @@
 #!/bin/bash
 ## error-404-html
-## version 0.0.1 - initial
+## version 0.0.2 - title template
 ##################################################
 . $( dirname ${0} )/include.sh
 ##################################################
@@ -17,15 +17,12 @@ $( file-charset )
 <style>
 body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 </style>
-<title>$( basename ${file} ) not found</title>
+$( title-template )
 </head>
 <body class="w3-light-grey">
 <div class="w3-content" style="max-width:1400px">
-<!-- Header -->
-<header class="w3-container w3-center w3-padding-32"> 
-<h1><b>$( a $( get-bloginfo-url ) $( get-bloginfo-name ) )</b></h1>
-<p>$( get-bloginfo description )</p>
-</header>
+
+$( doc-html-header )
 
 <!-- begin Grid -->
 <div class="w3-row">
@@ -34,7 +31,7 @@ body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 <div class="w3-card-4 w3-margin w3-white">
 <div class="w3-container">
 $( h1 404. Page not found )
-$( p The page you are looking for is nowhere to be found. Please check the URL or return to the $( u $( a $( get-bloginfo-url ) Home Page ) ). )
+$( p The page you are looking for is nowhere to be found. Please check the URL or return to the $( u $( a $( if-bloginfo-url && { echo "index.html" ; true ; } || get-bloginfo-url ) Home Page ) ). )
 <!--.w3-container--></div>
 <!--.w3-card--></div>
 
@@ -44,11 +41,7 @@ $( p The page you are looking for is nowhere to be found. Please check the URL o
 
 <!-- .w3-content --></div>
 
-<footer class="w3-container w3-dark-grey w3-padding-32 w3-margin-top">
-&copy; 2017 $( a $( get-bloginfo-url ) $( basename $( get-bloginfo-url ) ) )
-<!--button class="w3-button w3-black w3-disabled w3-padding-large w3-margin-bottom">Previous</button>
-<button class="w3-button w3-black w3-padding-large w3-margin-bottom">Next</button-->
-</footer>
+$( doc-html-footer )
 
 </body>
 </html>

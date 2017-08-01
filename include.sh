@@ -1,6 +1,6 @@
 #!/bin/bash
 ## include
-## version 0.0.2 - ul li
+## version 0.0.3 - title
 ##################################################
 markdown() { ${SH}/markdown.sh ${@} ; }
 file_mime_encoding() { ${SH2}/file-mime-encoding.sh ${@} ; }
@@ -8,6 +8,29 @@ cdr() { ${SH2}/cdr.sh ${@} ; }
 ##################################################
 include() {
  true
+}
+#-------------------------------------------------
+error-404-title-template() {
+ title "$( basename ${file} ) not found"
+}
+#-------------------------------------------------
+default-title-template() {
+ title "$( deslugify $( basename ${file} ) ) | $( if-bloginfo-url || basename $( get-bloginfo-url ) )"
+}
+#-------------------------------------------------
+which-title-template() { { local candidate_title_template_name ; candidate_title_template_name="${1}" ; }
+ case ${candidate_title_template_name} in
+  error-404-html|error-404) error-404-title-template ;;
+  doc-html|default) default-title-template ;;
+  *) default-title-template ;;
+ esac
+}
+#-------------------------------------------------
+title-template() { set -v -x ###***
+{ local candidate_title_template_name ; test ${#} -eq 1 && { candidate_title_template_name="${1}" ; true  ; } || { candidate_title_template_name=$( basename ${0} .sh ) ; } ; }
+ echo ${0} 1>&2 
+ which-title-template ${candidate_title_template_name}
+ set +v +x
 }
 #-------------------------------------------------
 doc-html-header-template() {
@@ -151,6 +174,10 @@ p() { { local text ; text="${@}" ; }
 #-------------------------------------------------
 u() { { local text ; text="${@}" ; }
  tag-fold u ${text}
+}
+#-------------------------------------------------
+title() { { local text ; text="${@}" ; }
+ tag-fold title ${text}
 }
 #-------------------------------------------------
 tag-fold() { { local tag ; tag="${1}" ; local text ; text=${@:2} ; }

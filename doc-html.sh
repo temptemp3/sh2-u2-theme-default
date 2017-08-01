@@ -1,13 +1,13 @@
 #!/bin/bash
 ## doc-html
-## version 0.0.1 - initial
+## version 0.0.2 - title template
 ##################################################
 . $( dirname ${0} )/include.sh
 ##################################################
 doc-html-template() {
  cat << EOF
 <!DOCTYPE html>
-<html><!-- based on https://www.w3schools.com/w3css/tryit.asp?filename=tryw3css_templates_blog&stacked=h -->
+<html>
 <head>
 $( file-charset )
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,7 +16,7 @@ $( file-charset )
 <style>
 body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 </style>
-<title>$( deslugify $( basename ${file} ) ) | $( if-bloginfo-url || basename $( get-bloginfo-url ) )</title>
+$( title-template )
 </head>
 <body class="w3-light-grey">
 <div class="w3-content" style="max-width:1400px">
