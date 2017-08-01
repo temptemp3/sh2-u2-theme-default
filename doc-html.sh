@@ -16,7 +16,7 @@ $( file-charset )
 <style>
 body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 </style>
-<title>$( basename ${file} ) not found</title>
+<title>$( deslugify $( basename ${file} ) ) | $( if-bloginfo-url || basename $( get-bloginfo-url ) )</title>
 </head>
 <body class="w3-light-grey">
 <div class="w3-content" style="max-width:1400px">
