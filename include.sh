@@ -1,6 +1,6 @@
 #!/bin/bash
 ## include
-## version 0.0.3 - title
+## version 0.0.4 - the-navigation, header update, first line handling
 ##################################################
 markdown() { ${SH}/markdown.sh ${@} ; }
 file_mime_encoding() { ${SH2}/file-mime-encoding.sh ${@} ; }
@@ -37,7 +37,7 @@ doc-html-header-template() {
  cat << EOF
 <!-- Header -->
 <header class="w3-container w3-center w3-padding-32"> 
-<h1><b>$( if-bloginfo-name || a $( get-bloginfo-url ) $( get-bloginfo-name ) )</b></h1>
+<h1><b>$( if-bloginfo-name || echo "<a style=\"text-decoration:none;\" href=\"$( get-bloginfo-url )\">$( get-bloginfo-name )</a>" )</b></h1>
 <p>$( if-bloginfo-description || get-bloginfo-description )</p>
 </header>
 EOF
@@ -60,8 +60,7 @@ $( the-content )
 <div class="w3-col l4">
 <div class="w3-card-2 w3-margin w3-margin-top w3-white">
 <div class="w3-container">
-<ul><li><a href="index.html">top</li></ul>
-${navigation} 
+$( the-navigation )
 <!--.w3-container--></div>
 <!--.w3-card--></div>
 <!--.w3-col--></div>
@@ -69,6 +68,29 @@ ${navigation}
 <!--.w3-row--></div>
 <!-- Grid end -->
 EOF
+}
+#-------------------------------------------------
+doc-html-navigation-element-template() {
+ local navigation_element
+ for navigation_element in index ${navigation}
+ do
+  cat << EOF
+<a href="${navigation_element}.html" class="w3-bar-item w3-button w3-mobile">${navigation_element}</a>
+EOF
+ done
+ 
+}
+#-------------------------------------------------
+doc-html-navigation-template() {
+ cat << EOF
+<div class="w3-bar w3-white">
+$( doc-html-navigation-element-template )
+</div> 
+EOF
+}
+#-------------------------------------------------
+the-navigation() {
+ doc-html-navigation-template
 }
 #-------------------------------------------------
 doc-html-footer-template() {
@@ -191,7 +213,27 @@ h1() { { local text ; text="${@}" ; }
 }
 #-------------------------------------------------
 the-content() {
- markdown ${file}
+ #------------------------------------------------
+ # original
+ #------------------------------------------------
+ #markdown ${file}
+ #return 
+ #------------------------------------------------
+ #- ignore first line in doc-html
+ # + make the first line in doc special and 
+ #   reserved for purpose to be specified at later 
+ #   date
+ #------------------------------------------------
+ local temp_file
+ temp_file="temp-${RANDOM}-$( date +%s )-file"
+ sed  "1d" ${file} > ${temp_file}
+ head ${temp_file} 1>&2
+ markdown ${temp_file}
+ test ! -f "${temp_file}" || {
+  rm ${temp_file} --verbose 1>&2
+ }
+ true
+ #------------------------------------------------
 }
 ##################################################
 if [ ! ] 

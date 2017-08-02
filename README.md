@@ -1,16 +1,18 @@
 # sh2-u2-theme-default
+
 default theme for sh2-u2
 
 ---
 
 **Current**
 
-v0.0.4 - error-404-html header/footer fix, title template
+v0.0.5 - the-navigation <!-- 2017/08/03  8:49 -->
 
 ---
 
 **Changelog**
 
+v0.0.4 - error-404-html header/footer fix, title template
 v0.0.3 - doc-html title fix  
 v0.0.2 - if-bloginfo templates   
 v0.0.1 - initial 
@@ -21,11 +23,9 @@ v0.0.1 - initial
 
 - add canonical link element eliminated potention omission in search results
   + in particular, index.html should be linked to bloginfo-url if available
-- ignore first line in doc-html
-  + make the first line in doc special and reserved for purpose to be specified at later date
  
 ---
 
-css based on https://www.w3schools.com/w3css/tryit.asp?filename=tryw3css_templates_blog&stacked=h
+css based on <https://www.w3schools.com/w3css/tryit.asp?filename=tryw3css_templates_blog&stacked=h>
 
 ---

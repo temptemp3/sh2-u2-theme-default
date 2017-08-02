@@ -1,6 +1,6 @@
 #!/bin/bash
 ## doc-html
-## version 0.0.2 - title template
+## version 0.0.3 - initialize
 ##################################################
 . $( dirname ${0} )/include.sh
 ##################################################
@@ -32,6 +32,15 @@ $( doc-html-footer )
 </body>
 </html>
 EOF
+}
+#-------------------------------------------------
+doc-html-initialize() {
+ true
+}
+#-------------------------------------------------
+doc-html-list() {
+ doc-html-initialize
+ doc-html-template
 }
 #-------------------------------------------------
 doc-html() {
