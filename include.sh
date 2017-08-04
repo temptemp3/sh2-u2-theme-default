@@ -1,11 +1,58 @@
 #!/bin/bash
 ## include
-## version 0.0.4 - the-navigation, header update, first line handling
+## version 0.0.5 - wip, document fields, meta robots
+set -v -x
 ##################################################
 markdown() { ${SH}/markdown.sh ${@} ; }
 file_mime_encoding() { ${SH2}/file-mime-encoding.sh ${@} ; }
 cdr() { ${SH2}/cdr.sh ${@} ; }
 ##################################################
+declare -A document
+##################################################
+meta-robots-content() { { local candidate_meta_robots ; candidate_meta_robots="${1}" ; }
+ case ${candidate_meta_robots} in
+  noindex,follow)	echo "noindex, follow"		;;
+  noindex,nofollow)	echo "noindex, nofollow"	;;
+  index,nofollow)	echo "index, nofollow" 		;;
+  default|*) 		echo "index, follow" 		;;
+ esac
+}
+#-------------------------------------------------
+meta-robots() { 
+ cat << EOF
+<meta name="robots" content="$( meta-robots-content ${document['meta-robots']} )">
+EOF
+}
+#-------------------------------------------------
+if-meta-robots() {
+ test ! "${document['meta-robots']}" || {
+  meta-robots
+ }
+}
+#-------------------------------------------------
+get-document-meta() {
+ local document_meta
+ local document_meta_name
+ local document_meta_value
+ document_meta=$(
+  cat ${file} \
+  | grep \
+  -e '<[!]--\s\+[a-z-]\+:[a-z,]\+\s\+-->' --only-matching \
+  | sed -e 's/\(.*\)/\1/' \
+  -e 's/<!--\s\+//g' \
+  -e 's/\s\+-->//g' 
+ )
+ test ! "${document_meta}" || {
+  document_meta_name=$( 
+   echo "${document_meta}" | cut -f1 -d:
+  )
+  document_meta_value=$(
+   echo "${document_meta}" | cut -f2 -d:
+  )
+  document["${document_meta_name}"]="${document_meta_value}" 
+ }
+}
+#-------------------------------------------------
 include() {
  true
 }
@@ -26,11 +73,10 @@ which-title-template() { { local candidate_title_template_name ; candidate_title
  esac
 }
 #-------------------------------------------------
-title-template() { set -v -x ###***
+title-template() { 
 { local candidate_title_template_name ; test ${#} -eq 1 && { candidate_title_template_name="${1}" ; true  ; } || { candidate_title_template_name=$( basename ${0} .sh ) ; } ; }
  echo ${0} 1>&2 
  which-title-template ${candidate_title_template_name}
- set +v +x
 }
 #-------------------------------------------------
 doc-html-header-template() {
@@ -43,6 +89,18 @@ doc-html-header-template() {
 EOF
 }
 #-------------------------------------------------
+document-h1() {
+ h1 $( basename ${file} ) 
+}
+#-------------------------------------------------
+if-document-h1() {
+ test ! \
+ -a "${document['show-document-heading-one']}" \
+ -a "${document['show-document-heading-one']}" = "false" || {
+  document-h1
+ }
+}
+#-------------------------------------------------
 doc-html-grid-template() {
  cat << EOF
 <!-- begin Grid -->
@@ -51,7 +109,7 @@ doc-html-grid-template() {
 <div class="w3-col l8 s12">
 <div class="w3-card-4 w3-margin w3-white">
 <div class="w3-container">
-$( h1 $( basename ${file} ) )
+$( if-document-h1 )
 $( the-content )
 <!--.w3-container--></div>
 <!--.w3-card--></div>
