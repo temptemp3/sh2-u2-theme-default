@@ -27,6 +27,7 @@ v0.0.1 - initial
 - add canonical link element eliminating potention omission in search results
   + in particular, index.html should be linked to bloginfo-url if available
 - global fields
+  + may use to mute attribution related sections such as 'Powered by ...' without modifying theme
 
 ---
 
