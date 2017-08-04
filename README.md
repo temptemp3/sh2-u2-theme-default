@@ -35,7 +35,11 @@ based on [W3.CSS blog template](https://www.w3schools.com/w3css/tryw3css_templat
 
 **document fields**
 
-foo:bar
+*how to use*
+
+embed document field declaration &lt;-- foo:bar --&gt; in document as html comment
+
+*known fields*
 
 meta-robots:noindex,nofollow|noindex,follow|index,nofollow|index|follow
 
