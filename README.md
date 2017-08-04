@@ -6,12 +6,14 @@ default theme for sh2-u2
 
 **Current**
 
-v0.0.6 - document fields <!-- 2017/08/04  8:59 -->
+- v0.0.7 - wip
+  + Powered by w3.css
 
 ---
 
 **Changelog**
 
+v0.0.6 - document fields <!-- 2017/08/04  8:59 -->
 v0.0.5 - the-navigation <!-- 2017/08/03  8:49 -->
 v0.0.4 - error-404-html header/footer fix, title template
 v0.0.3 - doc-html title fix  

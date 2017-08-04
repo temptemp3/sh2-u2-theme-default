@@ -157,6 +157,7 @@ doc-html-footer-template() {
 &copy; 2017 $( if-bloginfo-url || a $( get-bloginfo-url ) $( basename $( get-bloginfo-url ) ) )
 <!--button class="w3-button w3-black w3-disabled w3-padding-large w3-margin-bottom">Previous</button>
 <button class="w3-button w3-black w3-padding-large w3-margin-bottom">Next</button-->
+<p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank" rel="nofollow">w3.css</a></p>
 </footer>
 EOF
 }
