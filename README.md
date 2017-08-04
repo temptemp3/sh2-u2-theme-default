@@ -31,13 +31,13 @@ v0.0.1 - initial
 
 ---
 
-**document fields**
+## document fields
 
-*how to use*
+### how to use
 
 embed document field declaration &lt;-- foo:bar --&gt; in document as html comment
 
-*known fields*
+### known fields 
 
 meta-robots:noindex,nofollow|noindex,follow|index,nofollow|index|follow
 
