@@ -32,3 +32,13 @@ theme
 based on [W3.CSS blog template](https://www.w3schools.com/w3css/tryw3css_templates_blog.htm)
 
 ---
+
+**document fields**
+
+foo:bar
+
+meta-robots:noindex,nofollow|noindex,follow|index,nofollow|index|follow
+
+show-document-heading-one:false|!false
+
+---
