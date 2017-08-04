@@ -7,6 +7,7 @@ default theme for sh2-u2
 **Current**
 
 v0.0.6 - document fields <!-- 2017/08/04  8:59 -->
+  set meta robots using meta-robots document field
 
 ---
 
@@ -24,10 +25,6 @@ v0.0.1 - initial
 
 - add canonical link element eliminating potention omission in search results
   + in particular, index.html should be linked to bloginfo-url if available
-- meta
-  + robots
-	 + noindex,follow
- 
 
 ---
 
