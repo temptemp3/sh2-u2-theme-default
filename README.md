@@ -31,6 +31,7 @@ v0.0.1 - initial
 
 ---
 
-css based on <https://www.w3schools.com/w3css/tryit.asp?filename=tryw3css_templates_blog&stacked=h>
+theme 
+based on [W3.CSS blog template](https://www.w3schools.com/w3css/tryw3css_templates_blog.htm)
 
 ---
