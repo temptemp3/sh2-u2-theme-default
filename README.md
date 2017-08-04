@@ -1,7 +1,7 @@
 # sh2-u2-theme-default
 
 default theme for sh2-u2  
-based on [W3.CSS blog template](https://www.w3schools.com/w3css/tryw3css_templates_blog.htm)
+based on W3.CSS blog template
 
 ---
 
