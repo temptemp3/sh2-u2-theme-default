@@ -6,8 +6,8 @@ default theme for sh2-u2
 
 **Current**
 
-v0.0.6 - document fields <!-- 2017/08/04  8:59 -->
-  set meta robots using meta-robots document field
+v0.0.6 - document fields <!-- 2017/08/04  8:59 -->  
+\- set meta robots using meta-robots document field
 
 ---
 
