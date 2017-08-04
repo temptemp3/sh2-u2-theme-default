@@ -1,6 +1,7 @@
 # sh2-u2-theme-default
 
-default theme for sh2-u2
+default theme for sh2-u2  
+based on [W3.CSS blog template](https://www.w3schools.com/w3css/tryw3css_templates_blog.htm)
 
 ---
 
@@ -25,11 +26,6 @@ v0.0.1 - initial
 
 - add canonical link element eliminating potention omission in search results
   + in particular, index.html should be linked to bloginfo-url if available
-
----
-
-theme 
-based on [W3.CSS blog template](https://www.w3schools.com/w3css/tryw3css_templates_blog.htm)
 
 ---
 
