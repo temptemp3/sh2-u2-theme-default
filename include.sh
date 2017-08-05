@@ -1,6 +1,6 @@
 #!/bin/bash
 ## include
-## version 0.0.5 - wip, document fields, meta robots
+## version 0.0.6 - wip, hljs
 set -v -x
 ##################################################
 markdown() { ${SH}/markdown.sh ${@} ; }
@@ -9,6 +9,20 @@ cdr() { ${SH2}/cdr.sh ${@} ; }
 ##################################################
 declare -A document
 ##################################################
+if-hljs() {
+ grep -v -e '<code class=' &>/dev/null || {
+  hljs
+ }
+}
+#-------------------------------------------------
+hljs() {
+ cat << EOF
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+EOF
+}
+#-------------------------------------------------
 meta-robots-content() { { local candidate_meta_robots ; candidate_meta_robots="${1}" ; }
  case ${candidate_meta_robots} in
   noindex,follow)	echo "noindex, follow"		;;
