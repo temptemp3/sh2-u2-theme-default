@@ -1,6 +1,6 @@
 #!/bin/bash
 ## include
-## version 0.0.6 - wip, hljs
+## version 0.0.7 - wip, document-intro
 set -v -x
 ##################################################
 markdown() { ${SH}/markdown.sh ${@} ; }
@@ -51,9 +51,9 @@ get-document-meta() {
  document_meta=$(
   cat ${file} \
   | grep \
-  -e '<[!]--\s\+[a-z-]\+:[a-z,]\+\s\+-->' --only-matching \
-  | sed -e 's/\(.*\)/\1/' \
-  -e 's/<!--\s\+//g' \
+  -e '<[!]--\s*[a-z-]\+:\([a-z]\|[A-Z]\|[0-9]\|[-,. ]\)*-->' \
+  --only-matching \
+  | sed -e 's/<!--\s\+//g' \
   -e 's/\s\+-->//g' 
  )
  test ! "${document_meta}" || {
@@ -114,6 +114,20 @@ if-document-h1() {
   document-h1
  }
 }
+#-------------------------------------------------q
+document-intro-template() {
+ p "${document['document-intro']}" 
+}
+#-------------------------------------------------
+test-document-intro() {
+ test ! "${document['document-intro']}" 
+}
+#-------------------------------------------------
+if-document-intro() {
+ test-document-intro || {
+  document-intro-template
+ }
+}
 #-------------------------------------------------
 doc-html-grid-template() {
  cat << EOF
@@ -124,6 +138,7 @@ doc-html-grid-template() {
 <div class="w3-card-4 w3-margin w3-white">
 <div class="w3-container">
 $( if-document-h1 )
+$( if-document-intro )
 $( the-content )
 <!--.w3-container--></div>
 <!--.w3-card--></div>
@@ -168,7 +183,7 @@ the-navigation() {
 doc-html-footer-template() {
  cat << EOF
 <footer class="w3-container w3-dark-grey w3-padding-32 w3-margin-top">
-&copy; 2017 $( if-bloginfo-url || a $( get-bloginfo-url ) $( basename $( get-bloginfo-url ) ) )
+<p>&copy; 2017 $( if-bloginfo-url || a $( get-bloginfo-url ) $( basename $( get-bloginfo-url ) ) )</p>
 <!--button class="w3-button w3-black w3-disabled w3-padding-large w3-margin-bottom">Previous</button>
 <button class="w3-button w3-black w3-padding-large w3-margin-bottom">Next</button-->
 </footer>
