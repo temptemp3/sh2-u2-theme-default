@@ -43,4 +43,6 @@ meta-robots:noindex,nofollow|noindex,follow|index,nofollow|index|follow
 
 show-document-heading-one:false|!false
 
+document-intro:text
+
 ---
