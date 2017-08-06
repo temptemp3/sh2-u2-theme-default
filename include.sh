@@ -1,6 +1,6 @@
 #!/bin/bash
 ## include
-## version 0.0.6b - powered by
+## version 0.0.7 - wip, document-intro
 set -v -x
 ##################################################
 markdown() { ${SH}/markdown.sh ${@} ; }
@@ -9,6 +9,20 @@ cdr() { ${SH2}/cdr.sh ${@} ; }
 ##################################################
 declare -A document
 ##################################################
+if-hljs() {
+ grep -v -e '<code class=' &>/dev/null || {
+  hljs
+ }
+}
+#-------------------------------------------------
+hljs() {
+ cat << EOF
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+EOF
+}
+#-------------------------------------------------
 meta-robots-content() { { local candidate_meta_robots ; candidate_meta_robots="${1}" ; }
  case ${candidate_meta_robots} in
   noindex,follow)	echo "noindex, follow"		;;
@@ -37,9 +51,9 @@ get-document-meta() {
  document_meta=$(
   cat ${file} \
   | grep \
-  -e '<[!]--\s\+[a-z-]\+:[a-z,]\+\s\+-->' --only-matching \
-  | sed -e 's/\(.*\)/\1/' \
-  -e 's/<!--\s\+//g' \
+  -e '<[!]--\s*[a-z-]\+:\([a-z]\|[A-Z]\|[0-9]\|[-,. ]\)*-->' \
+  --only-matching \
+  | sed -e 's/<!--\s\+//g' \
   -e 's/\s\+-->//g' 
  )
  test ! "${document_meta}" || {
@@ -100,6 +114,20 @@ if-document-h1() {
   document-h1
  }
 }
+#-------------------------------------------------q
+document-intro-template() {
+ p "${document['document-intro']}" 
+}
+#-------------------------------------------------
+test-document-intro() {
+ test ! "${document['document-intro']}" 
+}
+#-------------------------------------------------
+if-document-intro() {
+ test-document-intro || {
+  document-intro-template
+ }
+}
 #-------------------------------------------------
 doc-html-grid-template() {
  cat << EOF
@@ -110,6 +138,7 @@ doc-html-grid-template() {
 <div class="w3-card-4 w3-margin w3-white">
 <div class="w3-container">
 $( if-document-h1 )
+$( if-document-intro )
 $( the-content )
 <!--.w3-container--></div>
 <!--.w3-card--></div>
