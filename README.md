@@ -9,6 +9,7 @@ based on W3.CSS blog template
 
 v0.0.7 - document intro <!-- 2017/08/05 22:50 -->  
 \- set document intro using document intro document field 
+\- Powered by w3.css
 
 ---
 
