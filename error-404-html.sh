@@ -1,13 +1,15 @@
 #!/bin/bash
 ## error-404-html
-## version 0.0.2 - title template
+## version 0.0.3a - the-html
 ##################################################
 . $( dirname ${0} )/include.sh
 ##################################################
-error-404-html-template() {
+error-404-title-template() {
+ title "$( basename ${file} ) not found"
+}
+#-------------------------------------------------
+error-404-head() {
  cat << EOF
-<!DOCTYPE html>
-<html>
 <head>
 <meta name="robots" content="noindex, nofollow">
 $( file-charset )
@@ -19,37 +21,32 @@ body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 </style>
 $( title-template )
 </head>
-<body class="w3-light-grey">
-<div class="w3-content" style="max-width:1400px">
-
-$( doc-html-header )
-
-<!-- begin Grid -->
-<div class="w3-row">
-<div class="w3-col l8 s12">
-
-<div class="w3-card-4 w3-margin w3-white">
-<div class="w3-container">
-$( h1 404. Page not found )
-$( p The page you are looking for is nowhere to be found. Please check the URL or return to the $( u $( a $( if-bloginfo-url && { echo "index.html" ; true ; } || get-bloginfo-url ) Home Page ) ). )
-<!--.w3-container--></div>
-<!--.w3-card--></div>
-
-<!--.w3-col--></div>
-<!--.w3-row--></div>
-<!-- Grid end -->
-
-<!-- .w3-content --></div>
-
-$( doc-html-footer )
-
-</body>
-</html>
 EOF
 }
 #-------------------------------------------------
+if-document-h1() { h1 404. Page not found ; }
+#-------------------------------------------------
+if-document-intro() { true ; }
+#-------------------------------------------------
+grid-navigation-column() { true ; }
+#-------------------------------------------------
+the-head() { error-404-head ; }
+#-------------------------------------------------
+the-content() {
+ p "The page you are looking for is nowhere to be found. Please check the URL or return to the $( u $( a $( if-bloginfo-url && { echo "index.html" ; true ; } || get-bloginfo-url ) Home Page ) )."
+}
+#-------------------------------------------------
+error-404-initialize() {
+ initialize
+}
+#-------------------------------------------------
+error-404-html-list() {
+ error-404-initialize 
+ the-html
+}
+#-------------------------------------------------
 error-404-html() {
- error-404-html-template
+ error-404-html-list
 }
 ##################################################
 if [ ${#} -ge 2 -a -f "${1}" -a -f "${2}" ] 

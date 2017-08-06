@@ -1,7 +1,7 @@
 #!/bin/bash
 ## include
-## version 0.0.7 - wip, document-intro
-set -v -x
+## version 0.0.8a - head template
+#set -v -x
 ##################################################
 markdown() { ${SH}/markdown.sh ${@} ; }
 file_mime_encoding() { ${SH2}/file-mime-encoding.sh ${@} ; }
@@ -9,6 +9,85 @@ cdr() { ${SH2}/cdr.sh ${@} ; }
 ##################################################
 declare -A document
 ##################################################
+head-template() {
+ cat << EOF
+<head>
+$( meta-charset UTF-8 )
+<meta name="viewport" content="width=device-width, initial-scale=1">
+$( title-template )
+$( if-meta-robots )
+$( if-link-canonical )
+<link rel="stylesheet" href="css/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<style>
+body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
+</style>
+$( if-hljs )
+</head>
+EOF
+}
+#-------------------------------------------------
+the-head() {
+ head-template
+}
+#-------------------------------------------------
+html-template() {
+ cat << EOF
+<!DOCTYPE html>
+<html>
+$( the-head )
+$( the-body )
+</html>
+EOF
+}
+#-------------------------------------------------
+the-html() {
+ html-template
+}
+#-------------------------------------------------
+body-template() {
+ cat << EOF
+<body class="w3-light-grey">
+<div class="w3-content" style="max-width:1400px">
+$( doc-html-header )
+$( grid-template )
+<!-- .w3-content --></div>
+$( doc-html-footer )
+</body>
+EOF
+}
+#-------------------------------------------------
+the-body() {
+ body-template
+}
+#-------------------------------------------------
+index-link-canonical() {
+ echo "https://${document['domain']}/"
+}
+#-------------------------------------------------
+default-link-canonical() {
+ echo "https://${document['domain']}/${document['name']}.html"
+}
+#-------------------------------------------------
+which-link-canonical() { 
+ case ${document['name']} in 
+  index) index-link-canonical ;;
+  *) default-link-canonical ;;
+ esac 
+}
+#-------------------------------------------------
+link-canonical() {
+ cat << EOF
+<link rel="canonical" href="$( which-link-canonical )" />
+EOF
+}
+#-------------------------------------------------
+if-link-canonical() {
+ if-bloginfo-url || {
+  link-canonical
+ } 
+}
+#-------------------------------------------------
 if-hljs() {
  grep -v -e '<code class=' &>/dev/null || {
   hljs
@@ -44,7 +123,12 @@ if-meta-robots() {
  }
 }
 #-------------------------------------------------
-get-document-meta() {
+get-document-info() {
+ document['name']=$( basename ${file} )
+ document['domain']=$( basename $( get-bloginfo-url ) )
+}
+#-------------------------------------------------
+get-document-meta-payload() {
  local document_meta
  local document_meta_name
  local document_meta_value
@@ -67,16 +151,19 @@ get-document-meta() {
  }
 }
 #-------------------------------------------------
+get-document-meta() {
+ case $( basename ${0} .sh ) in
+  error-404-html) true ;; 
+  *) get-document-meta-payload ;;
+ esac 
+}
+#-------------------------------------------------
 include() {
  true
 }
 #-------------------------------------------------
-error-404-title-template() {
- title "$( basename ${file} ) not found"
-}
-#-------------------------------------------------
 default-title-template() {
- title "$( deslugify $( basename ${file} ) ) | $( if-bloginfo-url || basename $( get-bloginfo-url ) )"
+ title "$( deslugify ${document['name']} ) | $( if-bloginfo-url || echo ${document['domain']} ; )"
 }
 #-------------------------------------------------
 which-title-template() { { local candidate_title_template_name ; candidate_title_template_name="${1}" ; }
@@ -104,7 +191,7 @@ EOF
 }
 #-------------------------------------------------
 document-h1() {
- h1 $( basename ${file} ) 
+ h1 ${document['name']}
 }
 #-------------------------------------------------
 if-document-h1() {
@@ -129,11 +216,8 @@ if-document-intro() {
  }
 }
 #-------------------------------------------------
-doc-html-grid-template() {
+grid-content-column-template() {
  cat << EOF
-<!-- begin Grid -->
-<div class="w3-row">
-
 <div class="w3-col l8 s12">
 <div class="w3-card-4 w3-margin w3-white">
 <div class="w3-container">
@@ -143,7 +227,11 @@ $( the-content )
 <!--.w3-container--></div>
 <!--.w3-card--></div>
 <!--.w3-col--></div>
-
+EOF
+}
+#-------------------------------------------------
+grid-navigation-column-template() {
+ cat << EOF
 <div class="w3-col l4">
 <div class="w3-card-2 w3-margin w3-margin-top w3-white">
 <div class="w3-container">
@@ -151,7 +239,23 @@ $( the-navigation )
 <!--.w3-container--></div>
 <!--.w3-card--></div>
 <!--.w3-col--></div>
-
+EOF
+}
+#-------------------------------------------------
+grid-content-column() {
+ grid-content-column-template
+}
+#-------------------------------------------------
+grid-navigation-column() {
+ grid-navigation-column-template
+}
+#-------------------------------------------------
+grid-template() {
+ cat << EOF
+<!-- begin Grid -->
+<div class="w3-row">
+$( grid-content-column )
+$( grid-navigation-column )
 <!--.w3-row--></div>
 <!-- Grid end -->
 EOF
@@ -183,7 +287,7 @@ the-navigation() {
 doc-html-footer-template() {
  cat << EOF
 <footer class="w3-container w3-dark-grey w3-padding-32 w3-margin-top">
-<p>&copy; 2017 $( if-bloginfo-url || a $( get-bloginfo-url ) $( basename $( get-bloginfo-url ) ) )</p>
+<p>&copy; 2017 $( if-bloginfo-url || a $( get-bloginfo-url ) ${document['domain']} )</p>
 <!--button class="w3-button w3-black w3-disabled w3-padding-large w3-margin-bottom">Previous</button>
 <button class="w3-button w3-black w3-padding-large w3-margin-bottom">Next</button-->
 </footer>
@@ -249,12 +353,14 @@ file-charsets() { { local charset ; charset="${1}" ; }
  esac 
 }
 #-------------------------------------------------
-file-charset() {
- local charset
- charset=$( file-charsets $( file_mime_encoding ${file} ) )
+meta-charset() { { local charset ; charset="${1}" ; }
  cat << EOF
 <meta charset="${charset}">
 EOF
+}
+#-------------------------------------------------
+file-charset() {
+ meta-charset-template $( file-charsets $( file_mime_encoding ${file} ) )
 }
 #-------------------------------------------------
 deslugify() { { local text ; text="${@}" ; }
@@ -314,13 +420,18 @@ the-content() {
  local temp_file
  temp_file="temp-${RANDOM}-$( date +%s )-file"
  sed  "1d" ${file} > ${temp_file}
- head ${temp_file} 1>&2
+ #head ${temp_file} 1>&2
  markdown ${temp_file}
  test ! -f "${temp_file}" || {
   rm ${temp_file} --verbose 1>&2
  }
  true
  #------------------------------------------------
+}
+#-------------------------------------------------
+initialize() {
+ get-document-info
+ get-document-meta
 }
 ##################################################
 if [ ! ] 
