@@ -1,6 +1,6 @@
 #!/bin/bash
 ## include
-## version 0.0.5 - wip, document fields, meta robots
+## version 0.0.6b - powered by
 set -v -x
 ##################################################
 markdown() { ${SH}/markdown.sh ${@} ; }
@@ -154,10 +154,11 @@ the-navigation() {
 doc-html-footer-template() {
  cat << EOF
 <footer class="w3-container w3-dark-grey w3-padding-32 w3-margin-top">
-&copy; 2017 $( if-bloginfo-url || a $( get-bloginfo-url ) $( basename $( get-bloginfo-url ) ) )
+<p>&copy; 2017 $( if-bloginfo-url || a $( get-bloginfo-url ) $( basename $( get-bloginfo-url ) ) )</p>
 <!--button class="w3-button w3-black w3-disabled w3-padding-large w3-margin-bottom">Previous</button>
 <button class="w3-button w3-black w3-padding-large w3-margin-bottom">Next</button-->
-<p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank" rel="nofollow">w3.css</a></p>
+<!--mute in global fields -->
+<!--p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank" rel="nofollow">w3.css</a></p-->
 </footer>
 EOF
 }
