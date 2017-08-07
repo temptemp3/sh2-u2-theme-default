@@ -31,6 +31,8 @@ v0.0.1 - initial
   + may use to mute attribution related sections such as 'Powered by ...' without modifying theme
 - document fields
   + handle empty field case
+- navigation
+  + no follow links
 
 ---
 
