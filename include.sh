@@ -128,6 +128,8 @@ get-document-info() {
  document['domain']=$( basename $( get-bloginfo-url ) )
 }
 #-------------------------------------------------
+# get-document-meta-payload
+# version 0.0.1 - initial
 get-document-meta-payload() {
  local document_meta
  local document_meta_name
