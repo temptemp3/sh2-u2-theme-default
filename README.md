@@ -7,14 +7,16 @@ based on W3.CSS blog template
 
 **Current**
 
-v0.0.7 - document intro <!-- 2017/08/05 22:50 -->  
-\- set document intro using document intro document field 
-\- Powered by w3.css
+0.0.8 - document fields fix <!-- 2017/08/07 23:25 -->
+\- handle multiple fields including alpha-numeric spaces and special characters
 
 ---
 
 **Changelog**
 
+v0.0.7 - document intro <!-- 2017/08/05 22:50 -->  
+\- set document intro using document intro document field 
+\- Powered by w3.css
 v0.0.6 - document fields <!-- 2017/08/04  8:59 -->   
 \- set meta robots using meta-robots document field  
 v0.0.5 - the-navigation <!-- 2017/08/03  8:49 -->
