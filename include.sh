@@ -1,14 +1,55 @@
 #!/bin/bash
 ## include
-## version 0.0.8a - head template
-#set -v -x
+## version 0.1.0 - sections
 ##################################################
 markdown() { ${SH}/markdown.sh ${@} ; }
 file_mime_encoding() { ${SH2}/file-mime-encoding.sh ${@} ; }
 cdr() { ${SH2}/cdr.sh ${@} ; }
+cecho() { ${SH2}/cecho.sh ${@} ; }
+. ${SH2}/aliases/commands.sh
 ##################################################
 declare -A document
 ##################################################
+template-card-container() { { local function_name ; function_name="${1}" ; }
+ w3-color() {
+  test "${w3_color}" && {
+   echo ${w3_color}
+  true
+  } || {
+   echo w3-white
+  }
+ }
+ w3-card-class() {
+  test "${w3_card_class}" && {
+   echo ${w3_card_class}
+  true
+  } || {
+   echo ""
+  } 
+ }
+ w3-card() {
+  test "${w3_card}" && {
+   echo ${w3_card}
+  true
+  } || {
+   echo "w3-card-4"
+  }
+ }
+ cat << EOF
+<div class="$( w3-card ) w3-margin $( w3-color ) $( w3-card-class )">
+<div class="w3-container">
+EOF
+ ${function_name}
+ cat << EOF
+<!--.w3-container--></div>
+<!--.w3-card--></div>
+EOF
+}
+#-------------------------------------------------
+template() {
+ commands
+}
+#-------------------------------------------------
 head-template() {
  cat << EOF
 <head>
@@ -216,16 +257,23 @@ if-document-intro() {
  }
 }
 #-------------------------------------------------
+grid-content-column-template-h1-generator() {
+ if-document-h1
+ if-document-intro
+}
+#-------------------------------------------------
+grid-content-column-template-h1() {
+  {
+    template \
+    card-container \
+    ${FUNCNAME}-generator
+  }
+}
+#-------------------------------------------------
 grid-content-column-template() {
  cat << EOF
 <div class="w3-col l8 s12">
-<div class="w3-card-4 w3-margin w3-white">
-<div class="w3-container">
-$( if-document-h1 )
-$( if-document-intro )
 $( the-content )
-<!--.w3-container--></div>
-<!--.w3-card--></div>
 <!--.w3-col--></div>
 EOF
 }
@@ -254,8 +302,8 @@ grid-template() {
  cat << EOF
 <!-- begin Grid -->
 <div class="w3-row">
-$( grid-content-column )
 $( grid-navigation-column )
+$( grid-content-column )
 <!--.w3-row--></div>
 <!-- Grid end -->
 EOF
@@ -287,7 +335,7 @@ the-navigation() {
 doc-html-footer-template() {
  cat << EOF
 <footer class="w3-container w3-dark-grey w3-padding-32 w3-margin-top">
-<p>&copy; 2017 $( if-bloginfo-url || a $( get-bloginfo-url ) ${document['domain']} )</p>
+<p>&copy; 2015-$( date +%Y ) $( if-bloginfo-url || a $( get-bloginfo-url ) ${document['domain']} )Nicholas Shellabarger</p>
 <!--button class="w3-button w3-black w3-disabled w3-padding-large w3-margin-bottom">Previous</button>
 <button class="w3-button w3-black w3-padding-large w3-margin-bottom">Next</button-->
 <!--mute in global fields -->
@@ -377,6 +425,11 @@ a() { { local href ; href="${1}" ; local text ; text=${@:2} ; }
 EOF
 }
 #-------------------------------------------------
+text_content() { { local html ; html=${@} ; }
+ echo ${@} \
+ | sed 's/<[^>]*.//g'
+}
+#-------------------------------------------------
 li() { { local text ; text="${@}" ; }
  tag-fold li ${text}
 }
@@ -407,7 +460,162 @@ h1() { { local text ; text="${@}" ; }
  tag-fold h1 $( deslugify ${text} )
 }
 #-------------------------------------------------
+the-content-payload-default() {
+ markdown ${temp_file}
+}
+#-------------------------------------------------
+the-content-payload-sections-template-generator-default() { 
+ sed -n "${range}p" ${infile} > ${infile}-section
+ markdown ${infile}-section
+}
+#-------------------------------------------------
+the-content-payload-sections-template-generator-body() { 
+ sed -n "${range}p" ${infile} > ${infile}-section
+ sed -i '1,3d' ${infile}-section
+ sed -i '$d' ${infile}-section
+ sed -i '$d' ${infile}-section
+ sed -i '$d' ${infile}-section
+ markdown ${infile}-section
+}
+#-------------------------------------------------
+the-content-payload-sections-template-generator-start-end() { 
+ echo ${section_start}
+ echo ${section_end}
+}
+#-------------------------------------------------
+the-content-payload-sections-template-generator() { 
+ commands
+}
+#-------------------------------------------------
+the-content-payload-sections-template-setup-section-end() { 
+ local line_no
+ line_no=$(( 
+  $( echo ${range} | cut '-d,' '-f2' ) - 1 
+ ))
+ section_end=$(
+  text_content $( 
+   sed -n "${line_no}p" ${infile} 
+  )
+ )
+ cecho "section end: \"${section_end}\""
+}
+#-------------------------------------------------
+the-content-payload-sections-template-setup-section-start() { 
+ local line_no
+ line_no=$(( 
+  $( echo ${range} | cut '-d,' '-f1' ) + 1 
+ ))
+ section_start=$(
+  text_content $( 
+   sed -n "${line_no}p" ${infile} 
+  )
+ )
+ cecho "section start: \"${section_end}\""
+}
+#-------------------------------------------------
+the-content-payload-sections-template() { 
+  set -v -x 
+  local section_end
+  ${FUNCNAME}-setup-section-end
+  ${FUNCNAME}-setup-section-start
+  pattern_date_dd_mmm_yyyy="[0-9][0-9] [A-Z][a-z][a-z] [0-9][0-9][0-9][0-9]"
+  case ${section_end} in
+   ${pattern_date_dd_mmm_yyyy}) {
+     {
+       (
+         local w3_color
+         w3_color="w3-dark-gray"
+         local w3_card_class
+         w3_card_class="collapsible"
+         template \
+         card-container \
+         ${FUNCNAME}-generator-start-end
+       )
+       (
+         local w3_card
+	 w3_card="w3-card-3"
+         local w3_card_class
+         w3_card_class="content"
+         template \
+         card-container \
+         ${FUNCNAME}-generator-body
+       )
+     } >> ${temp_file}-sections-footer
+   } ;;
+   *) {
+     {
+       template \
+       card-container \
+       ${FUNCNAME}-generator-default
+     }
+   } ;;
+  esac
+  set +v +x
+}
+#-------------------------------------------------
+the-content-payload-sections() { { local infile ; infile="${1}" ; }
+ cecho green in ${FUNCNAME}
+ get-div-lines() {
+  cat ${infile} \
+  | grep '^[*][*][*]\+' --only-matching -n \
+  | cut '-d:' '-f1'
+ }
+ len() { echo ${#} ; }
+ cdr() { echo ${@:2} ; }
+ car() { echo ${1} ; }
+ cadr() { car $( cdr ${@} ) ; }
+ local range
+ local div_lines
+ div_lines=$(
+  get-div-lines
+ )
+ while [ ! ]
+ do
+  range="$(( $( car ${div_lines} ) + 1 )),$(( $( cadr ${div_lines} ) - 1 ))"
+  ${FUNCNAME}-template
+  div_lines=$( cdr ${div_lines} )
+  test ! $( len ${div_lines} ) -le 1 || {
+   break
+  }
+ done
+}
+#-------------------------------------------------
+the-content-payload() {
+ commands
+}
+#-------------------------------------------------
 the-content() {
+ cecho green in ${FUNCNAME}
+ cat << EOF
+<style>
+.collapsible {
+/*
+    background-color: #777;
+    color: white;
+*/
+    cursor: pointer;
+    padding: 18px;
+/*
+    width: 100%;
+*/
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+}
+
+.active, .collapsible:hover {
+    background-color: #555;
+}
+
+.content {
+    padding: 0 18px;
+    display: none;
+    overflow: hidden;
+    background-color: #f1f1f1;
+}
+</style>
+EOF
  #------------------------------------------------
  # original
  #------------------------------------------------
@@ -423,11 +631,50 @@ the-content() {
  temp_file="temp-${RANDOM}-$( date +%s )-file"
  sed  "1d" ${file} > ${temp_file}
  #head ${temp_file} 1>&2
- markdown ${temp_file}
- test ! -f "${temp_file}" || {
-  rm ${temp_file} --verbose 1>&2
+ #------------------------------------------------
+ # payload
+ # - default
+ # + output html as is
+ # - sections
+ # + output html in sections
+ #------------------------------------------------
+ {
+   ${FUNCNAME}-payload \
+   sections \
+   ${temp_file}
  }
- true
+ #------------------------------------------------
+ {
+   set -v -x
+   touch ${temp_file}-sections-footer
+   cat ${temp_file}-sections-footer
+   set +v +x
+ }
+ #------------------------------------------------
+ cat << EOF
+<script>
+var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+    coll[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var content = this.nextElementSibling;
+        if (content.style.display === "block") {
+            content.style.display = "none";
+        } else {
+            content.style.display = "block";
+        }
+    });
+}
+</script>
+EOF
+ #------------------------------------------------
+ # cleanup
+ #------------------------------------------------
+ test ! -f "${temp_file}" || {
+  cecho yellow $( rm -v ${temp_file} )
+ }
  #------------------------------------------------
 }
 #-------------------------------------------------
