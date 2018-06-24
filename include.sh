@@ -1,10 +1,17 @@
 #!/bin/bash
 ## include
+<<<<<<< HEAD
 ## version 0.1.0 - sections
+=======
+## version 0.0.9 - document meta fix
+#set -v -x
+>>>>>>> 60cf4e00be5a21df3079fb42b0fba799d3d4472b
 ##################################################
-markdown() { ${SH}/markdown.sh ${@} ; }
-file_mime_encoding() { ${SH2}/file-mime-encoding.sh ${@} ; }
+. ${SH2}/error.sh	# error handling
+error "true"		# show errors
+##################################################
 cdr() { ${SH2}/cdr.sh ${@} ; }
+<<<<<<< HEAD
 cecho() { ${SH2}/cecho.sh ${@} ; }
 . ${SH2}/aliases/commands.sh
 ##################################################
@@ -48,6 +55,73 @@ EOF
 #-------------------------------------------------
 template() {
  commands
+=======
+file_mime_encoding() { ${SH2}/file-mime-encoding.sh ${@} ; }
+generate_temp() { ${SH2}/generate-temp.sh ${@} ; }
+markdown() { ${SH}/markdown.sh ${@} ; }
+range() { ${SH2}/range.sh ${@} ; }
+##################################################
+declare -A document
+##################################################
+extract-document-meta() {
+ cat ${file} \
+  | grep \
+  -e '<[!]--\s*[a-z-]\+:\([a-z]\|[A-Z]\|[0-9]\|[-,. ]\)*-->' \
+  --only-matching \
+  | sed -e 's/<!--\s\+//g' \
+  -e 's/\s\+-->//g' 
+}
+#-------------------------------------------------
+get-document-meta-payload() { # ${document_meta_line_no}
+ local document_meta
+ local document_meta_name
+ local document_meta_value
+ document_meta=$( sed -n "${document_meta_line_no}p" ${temp}-document-meta )
+ test "${document_meta}"
+ document_meta_name=$( 
+  echo "${document_meta}" | cut -f1 -d:
+ )
+ document_meta_value=$(
+  echo "${document_meta}" | cut -f2 -d:
+ )
+ test "${document_meta_name}"
+ test "${document_meta_value}"
+ document["document-meta"]="${document['document-meta']} ${document_meta_name}" 
+ document["${document_meta_name}"]="${document_meta_value}" 
+}
+#-------------------------------------------------
+load-document-meta() { # ${file}
+ local document_meta_line_no
+ # to do: output in debug mode
+ extract-document-meta | tee ${temp}-document-meta &>/dev/null
+ for document_meta_line_no in $( range $( cat ${temp}-document-meta | wc --lines ) )
+ do
+  get-document-meta-payload
+ done
+}
+#-------------------------------------------------
+list-document-meta() { 
+ local meta_key
+ local meta_value
+ for meta_key in ${document['document-meta']}
+ do
+  meta_value=${document[${meta_key}]}
+  echo ${meta_key}: ${meta_value}
+ done
+}
+#-------------------------------------------------
+_cleanup() {
+ test ! "${temp}" || {
+  ( rm ${temp}* --verbose 1>&2 || true ) &>/dev/null
+ }
+}
+#-------------------------------------------------
+temp=
+initialize-temp() {
+ temp=$(
+  generate_temp $( basename ${0} .sh )
+ )
+>>>>>>> 60cf4e00be5a21df3079fb42b0fba799d3d4472b
 }
 #-------------------------------------------------
 head-template() {
@@ -169,33 +243,10 @@ get-document-info() {
  document['domain']=$( basename $( get-bloginfo-url ) )
 }
 #-------------------------------------------------
-get-document-meta-payload() {
- local document_meta
- local document_meta_name
- local document_meta_value
- document_meta=$(
-  cat ${file} \
-  | grep \
-  -e '<[!]--\s*[a-z-]\+:\([a-z]\|[A-Z]\|[0-9]\|[-,. ]\)*-->' \
-  --only-matching \
-  | sed -e 's/<!--\s\+//g' \
-  -e 's/\s\+-->//g' 
- )
- test ! "${document_meta}" || {
-  document_meta_name=$( 
-   echo "${document_meta}" | cut -f1 -d:
-  )
-  document_meta_value=$(
-   echo "${document_meta}" | cut -f2 -d:
-  )
-  document["${document_meta_name}"]="${document_meta_value}" 
- }
-}
-#-------------------------------------------------
 get-document-meta() {
  case $( basename ${0} .sh ) in
   error-404-html) true ;; 
-  *) get-document-meta-payload ;;
+  *) load-document-meta ;;
  esac 
 }
 #-------------------------------------------------
@@ -679,6 +730,7 @@ EOF
 }
 #-------------------------------------------------
 initialize() {
+ initialize-temp
  get-document-info
  get-document-meta
 }
